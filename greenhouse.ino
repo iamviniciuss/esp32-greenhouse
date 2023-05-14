@@ -16,11 +16,13 @@ HTTPClient http;
 WiFiClientSecure net = WiFiClientSecure();
 MQTTClient client = MQTTClient(512);
 
-
 void setup() {
     pinMode(pinSensorUmiSoloA, INPUT);
-    pinMode(rele, OUTPUT);
     pinMode(releCooler, OUTPUT);
+
+    pinMode(rele, OUTPUT);
+    digitalWrite(rele, HIGH);
+
     Serial.begin(9600);
     setupWifi();
     connectToAWS(&client, &net);
@@ -29,9 +31,16 @@ void setup() {
 
 void loop() {
     Serial.println("*** Start Looping***");
-    soilCollector(&client);
+
+    int waterPumpturnOff = digitalRead(rele);
+    int delayTime = 3000;
+    if (!waterPumpturnOff) {
+        delayTime = 300;
+    }
+
+    delay(delayTime);
+    soilCollector(&client);    
     client.loop();
-    delay(4000);
 }
 
 void consumerCommand() {

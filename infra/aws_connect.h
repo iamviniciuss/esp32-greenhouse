@@ -10,14 +10,6 @@
 #include <WiFiClientSecure.h>
 
 
-// O nome do dispositivo. Isso DEVE corresponder ao nome definido no console AWS
-#define DEVICE_NAME "sdk-nodejs-v2"
-// O endpoint MQTTT para o dispositivo (exclusivo para cada conta AWS, mas compartilhado entre os dispositivos dentro da conta)
-#define AWS_IOT_ENDPOINT "ajjur8f2g6sva-ats.iot.us-east-1.amazonaws.com"
-// O tópico MQTT em que este dispositivo deve publicar
-#define AWS_IOT_PUBLISH_TOPIC_WATER_PUMP "sdk/test/js"
-// Quantas vezes devemos tentar nos conectar ao AWS
-#define AWS_MAX_RECONNECT_TRIES 50
 
 
 void connectToAWS(MQTTClient* client, WiFiClientSecure* net)
