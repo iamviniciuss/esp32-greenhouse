@@ -1,3 +1,4 @@
+#include <Adafruit_Sensor.h>
 #include <SimpleDHT.h>
 #include "DHT.h"
 #include <MQTT.h>
@@ -13,25 +14,29 @@
 #include "application/manage_water_pump_state.h"
 #include "application/soil_collector.h"
 #include <WiFiClientSecure.h>
-#define DHTTYPE DHT11
+#include "DHT.h"
 
 HTTPClient http;
 WiFiClientSecure net = WiFiClientSecure();
 MQTTClient client = MQTTClient(512);
-
-DHT dht(PIN_SENSOR_TEMPERATURA, DHTTYPE);                
+DHT dht(PIN_SENSOR_TEMPERATURA, DHTTYPE);
 
 float Temperature;
 float Humidity;
 
 void setup() {
-    pinMode(pinSensorUmiSoloA, INPUT);
-    pinMode(PIN_SENSOR_TEMPERATURA, INPUT);
-    pinMode(releCooler, OUTPUT);
+    
+    pinMode(PIN_RELE_COOLER, OUTPUT);
     dht.begin();     
 
-    pinMode(rele, OUTPUT);
-    digitalWrite(rele, HIGH);
+    // Bomba D'agua
+    pinMode(PIN_RELE_BOMBA_AGUA, OUTPUT);
+    digitalWrite(PIN_RELE_BOMBA_AGUA, HIGH);
+    // digitalWrite(PIN_RELE_BOMBA_AGUA, LOW);
+
+    //Lampada
+    pinMode(PIN_LAMPADA, OUTPUT);
+    digitalWrite(PIN_LAMPADA, HIGH);
 
     Serial.begin(9600);
     setupWifi();
@@ -40,21 +45,18 @@ void setup() {
 }
 
 void temperature() {
-    Serial.println("**Read temperature");
-
-    client.loop();
-    delay(1000);
-    temperatureCollector(&client);    
+    Serial.println("**Read temperature");    
+    temperatureCollector(&client, &dht);    
     client.loop();
 }
 
 void humidity() {
     Serial.println("**Read humidity");
 
-    int waterPumpturnOff = digitalRead(rele);
-    int delayTime = 5000;
+    int waterPumpturnOff = digitalRead(PIN_RELE_BOMBA_AGUA);
+    int delayTime = 2000;
     if (!waterPumpturnOff) {
-        delayTime = 5000;
+        delayTime = 2000;
     }
 
     delay(delayTime);

@@ -5,7 +5,11 @@
 void sendJsonToAWS(MQTTClient* client, String message, String topic)
 {
     bool ok = client->publish(topic, message);
-    Serial.println("Success publish: ");
+    Serial.print("\nSuccess publish: ");
     Serial.print(ok);
+    if (!ok) {
+        Serial.print("\nError: ");
+        Serial.print(client->lastError());
+    }
     Serial.print("\n\n");
 }
